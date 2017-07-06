@@ -11,7 +11,7 @@ import tkinter.ttk as ttk
 from tkinter import messagebox
 import sys, os.path, subprocess
 import urllib.request
-import time
+from time import sleep
 import zipfile
 
 
@@ -80,11 +80,11 @@ direttamente riferimento a Joseph D. Novak. (Fonte guida Cmaps)'''
 
         self.font = '''Intalla i più comuni font presenti nei sistemi Microsoft. Vengono installati anche i font liberi Caladea e Carlito, sostituti di Cambria e Calibri.'''
 
-        self.adobe = '''Adobe Integrated Runtime (AIR) è un ambiente di sviluppo multipiattaforma per applicazioni internet che usano Adobe Flash, Adobe Flex, HTML, o AJAX, che possono essere utilizzate come applicazioni desktop.
-AIR, senza alcun uso di un browser, consente di scrivere applicazioni per garantire molte delle caratteristiche dei più tradizionali programmi installabili su desktop, grazie all'uso di codice Flash, HTML e JavaScript.
-Un programma scritto in Flash è quindi eseguibile su qualunque computer abbia installato Adobe Air: sia esso un Pc con Windows, un Macintosh, un tablet con Android o un dispositivo mobile iOs. (Fonte Wikipedia)
-
-Adobe Air è indispensabile per eseguire il software Scratch 2.0
+        self.air = '''Scratch è un ambiente di programmazione gratuito, con un linguaggio di programmazione di tipo grafico. Il linguaggio, ispirato alla teoria costruzionista dell'apprendimento e progettato per l'insegnamento della programmazione tramite primitive visive, è adatto a studenti, insegnanti e genitori, ed utilizzabile per progetti pedagogici e di intrattenimento che spaziano dalla matematica alla scienza, consentendo la realizzazione di simulazioni, visualizzazione di esperimenti, animazioni, musica, arte interattiva, e semplici giochi.
+Scratch prevede un approccio orientato agli oggetti (denominati Sprites).
+Scratch è un linguaggio di programmazione che consente di elaborare storie interattive, giochi, animazioni, arte e musica. Inoltre permette di condividere i progetti con altri utenti del web.
+L'idea di questo linguaggio è che anche i bambini o le persone inesperte di linguaggi di programmazione possono imparare importanti concetti di calcolo matematico, a ragionare in modo sistematico, a pensare in modo creativo e anche a lavorare partecipativamente.
+Scratch è caratterizzato da una programmazione con blocchi di costruzione (blocchi grafici) creati per adattarsi l'un l'altro, ma solo se inseriti in una corretta successione, in questo modo si evitano inesattezze nella sintassi.
 '''
 
         self.ubuntu = '''Nei sistemi Linux l’installazione di default consente di riprodurre un numero limitato di formati audio video: i formati “free”. Per riprodurre ad esempio i files mp3, wma o dvx è necessario installare i codec specifici. Per installare i codec principali in Ubuntu è possibile installare il pacchetto ubuntu-restricted-extras . (Fonte Web)'''
@@ -105,7 +105,7 @@ Adobe Air è indispensabile per eseguire il software Scratch 2.0
                                "Pacchetto Pdf-xchange",
                                "Pacchetto Cmaps",
                                "Pacchetto Fonts",
-                               "Pacchetto Adobe Air",
+                               "Pacchetto Adobe Air e Scratch",
                                "Pacchetto Ubuntu Extra",
                                "Informazioni",
                                "Connessione presente"]
@@ -131,7 +131,7 @@ Adobe Air è indispensabile per eseguire il software Scratch 2.0
         self.lb.insert("end", "Pdf-xchange")
         self.lb.insert("end", "Cmaps")
         self.lb.insert("end", "Fonts Microsoft")
-        self.lb.insert("end", "Adobe Air")
+        self.lb.insert("end", "Adobe Air e Scratch")
         self.lb.insert("end", "Ubuntu Extra")
         self.lb.insert("end", "Informazioni")
         self.lb.config(selectbackground="green")
@@ -261,18 +261,18 @@ Adobe Air è indispensabile per eseguire il software Scratch 2.0
             self.text.delete(1.0, "end")
             self.text.insert("end", self.font)
             self.text.config(state='disabled')
-        elif value == "Adobe Air":
+        elif value == "Adobe Air e Scratch":
             package = "/opt/Adobe AIR/Versions/1.0/Adobe AIR Application Installer"
             if self.query_arch() == "x86_64":
                 version = "air64"
             else:
                 version = "air32"
             self.button_install.configure(state=self.query_package(package, "i", "path"), command= lambda: self.install_air(version))
-            self.button_uninstall.configure(state=self.query_package(package, "r", "path"), command=self.uniinstall_air)
+            self.button_uninstall.configure(state=self.query_package(package, "r", "path"), command=self.uninstall_air)
             self.change_label(15, 'normal', 'black')
             self.text.config(state='normal')
             self.text.delete(1.0, "end")
-            self.text.insert("end", self.adobe)
+            self.text.insert("end", self.air)
             self.text.config(state='disabled')
         elif value == "Ubuntu Extra":
             package = "ubuntu-restricted-extras"
@@ -321,27 +321,31 @@ Adobe Air è indispensabile per eseguire il software Scratch 2.0
                     "earth64":"sudo sh -c 'echo \"deb [arch=amd64] http://dl.google.com/linux/earth/deb/ stable main\" >> /etc/apt/sources.list.d/google.list'",
                     "earth32":"sudo sh -c 'echo \"deb http://dl.google.com/linux/earth/deb/ stable main\" >> /etc/apt/sources.list.d/google.list'"
                     }
-
+        
         proc = subprocess.Popen('wget -q -O - ' + link_key + ' | sudo apt-key add -', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         proc = subprocess.Popen(package_name[version], shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
+        self.change_label(4, 'normal', 'black')
         proc = subprocess.Popen('sudo apt-get --assume-yes update', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         proc = subprocess.Popen('sudo apt-get --assume-yes install ' + package, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
+        self.change_label(5, 'normal', 'black')
         
 
     def uninstall_deb(self, package):
         self.start_progressbar()
+        self.change_label(6, 'normal', 'black')
         proc = subprocess.Popen('sudo apt-get --assume-yes remove ' + package, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         self.stop_progressbar()
+        self.change_label(5, 'normal', 'black')
 
 
     def install_dpkg(self, package):
-        self.start_progressbar()
         self.check_connection()
+        self.start_progressbar()
         self.change_state_button('disabled')
         self.change_label(3, 'normal', 'black')
         link_get = {'teamviewer':'http://download.teamviewer.com/download/teamviewer_i386.deb',
@@ -354,32 +358,40 @@ Adobe Air è indispensabile per eseguire il software Scratch 2.0
                     }
         proc = subprocess.Popen('wget ' + link_get[package] + ' -P ' + self.download_directory, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
+        self.change_label(4, 'normal', 'black')
         proc = subprocess.Popen('dpkg -i ' + self.download_directory + '/' + package_name[package], shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         proc = subprocess.Popen('apt -f install', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
+        self.change_label(5, 'normal', 'black')
         self.stop_progressbar()
         
 
     def install_pdfxchange(self):
         self.check_connection()
         self.change_state_button('disabled')
+        self.change_label(3, 'normal', 'black')
         link_get = {'pdfxchange':'https://www.tracker-software.com/downloads/PDFXVwer.zip'}
         proc = subprocess.Popen('wget ' + link_get['pdfxchange'] + ' -P ' + self.download_directory, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         zip_ref = zipfile.ZipFile(self.download_directory + '/PDFXVwer.zip', 'r')
         zip_ref.extractall(self.download_directory)
         zip_ref.close()
+        self.change_label(1ì4, 'normal', 'black')
         proc = subprocess.Popen('wine ' + self.download_directory + '/PDFXVwer.exe /VERYSILENT /NORESTART', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
+        self.change_label(5, 'normal', 'black')
 
     def uninstall_pdfxchange(self):
+        self.change_label(6, 'normal', 'black')
         pdfxchange = "~/.wine/drive_c/Program\ Files/Tracker\ Software/PDF\ Viewer/unins000.exe"
         proc = subprocess.Popen('wine ' + pdfxchange, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
+        self.change_label(5, 'normal', 'black')
 
     def install_cmap(self, package):
         self.check_connection()
+        self.change_label(3, 'normal', 'black')
         link_get = {'cmap32':'http://cmapdownload.ihmc.us/installs/CmapTools/Linux/Linux32CmapTools_v6.02_08-11-16.bin',
                     'cmap64':'http://cmapdownload.ihmc.us/installs/CmapTools/Linux/Linux64CmapTools_v6.02_08-11-16.bin'
                     }
@@ -398,7 +410,7 @@ Adobe Air è indispensabile per eseguire il software Scratch 2.0
 
         proc = subprocess.Popen('wget ' + link_get[package] + ' -P ' + self.download_directory, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-
+        self.change_label(4, 'normal', 'black')
         proc = subprocess.Popen('sudo chmod +x ' + self.download_directory + '/Linux64CmapTools_v6.02_08-11-16.bin', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()         
 
@@ -424,25 +436,31 @@ Adobe Air è indispensabile per eseguire il software Scratch 2.0
         iconFile.write('X-Desktop-File-Install-Version=0.11\n')
 
         iconFile.close()
+        self.change_label(5, 'normal', 'black')
         
 
     def uninstall_cmap(self):
+        self.check_root()
+        self.change_label(6, 'normal', 'black')
         proc = subprocess.Popen('sudo rm /opt/\'IHMC CmapTools\'/cmap-logo.png', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         proc = subprocess.Popen('sudo rm /usr/share/applications/cmaptools.desktop', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         proc = subprocess.Popen('sudo /opt/\'IHMC CmapTools\'/\'Uninstall CmapTools\'', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
+        self.change_label(5, 'normal', 'black')
 
     def install_fonts(self):
-        self.start_progressbar()
         self.check_connection()
+        self.start_progressbar()
+        self.change_label(3, 'normal', 'black')
         self.change_state_button('disabled')
         proc = subprocess.Popen('apt install cabextract', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait() 
         link_get = {'fonts':'http://ftp.de.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb'}
         proc = subprocess.Popen('wget ' + link_get['fonts'] + ' -P ' + self.download_directory, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
+        self.change_label(4, 'normal', 'black')
         proc = subprocess.Popen('apt --assume-yes install cabextract', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         proc = subprocess.Popen('dpkg -i ' + self.download_directory + '/ttf-mscorefonts-installer_3.6_all.deb', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
@@ -454,23 +472,31 @@ Adobe Air è indispensabile per eseguire il software Scratch 2.0
         proc = subprocess.Popen('apt --assume-yes -f install', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         self.stop_progressbar()
+        self.change_label(5, 'normal', 'black')
 
     def uninstall_fonts(self):
+        self.check_root()
+        self.start_progressbar()
+        self.change_label(6, 'normal', 'black')
         proc = subprocess.Popen('apt --assume-yes remove ttf-mscorefonts-installer', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         proc = subprocess.Popen('apt --assume-yes remove fonts-crosextra-caladea', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         proc = subprocess.Popen('apt --assume-yes remove fonts-crosextra-carlito', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
+        self.stop_progressbar()
+        self.change_label(5, 'normal', 'black')
 
     def install_air(self, version):
         self.check_connection()
         self.change_state_button('disabled')
+        self.change_label(3, 'normal', 'black')
         link_get = {'air32':'adobeair_2.6.0.2_i386.deb',
                     'air64':'adobeair_2.6.0.2_amd64.deb'
                     }
         proc = subprocess.Popen('wget http://drive.noobslab.com/data/apps/AdobeAir/' + link_get[version] +  ' -P ' + self.download_directory, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
+        self.change_label(4, 'normal', 'black')
         proc = subprocess.Popen('dpkg -i ' + self.download_directory + '/' + link_get[version], shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         proc = subprocess.Popen('apt-get install -f', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
@@ -479,12 +505,18 @@ Adobe Air è indispensabile per eseguire il software Scratch 2.0
         proc.wait()
         proc = subprocess.Popen('/opt/Adobe AIR/Versions/1.0/Adobe AIR Application Installer -silent -location /opt ' + self.download_directory + '/' + 'Scratch-456.0.1.air', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
+        self.change_label(5, 'normal', 'black')
 
-    def unistall_air():
+    def uninstall_air():
+        self.check_root()
+        self.change_label(6, 'normal', 'black')
         proc = subprocess.Popen('apt autoremove adobeair', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
+        self.change_label(5, 'normal', 'black')
 
     def install_extra(self):
+        self.check_connection()
+        self.change_label(4, 'normal', 'black')
         proc = subprocess.Popen('apt --assume-yes install ubuntu-restricted-extras', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         proc = subprocess.Popen('apt --assume-yes install libdvdnav4 libdvdread4 gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly libdvd-pkg', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
@@ -493,12 +525,16 @@ Adobe Air è indispensabile per eseguire il software Scratch 2.0
         proc.wait()
         proc = subprocess.Popen('apt --assume-yes -f install', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
+        self.change_label(5, 'normal', 'black')
 
     def uninstall_extra(self):
+        self.change_label(6, 'normal', 'black')
+        self.check_root()
         proc = subprocess.Popen('apt --assume-yes remove ubuntu-restricted-extras', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         proc = subprocess.Popen('apt --assume-yes remove libdvdnav4 libdvdread4 gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly libdvd-pkg', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
+        self.change_label(5, 'normal', 'black')
 
     #control architecture 32 or 64
     def query_arch(self):
@@ -519,14 +555,18 @@ Adobe Air è indispensabile per eseguire il software Scratch 2.0
     #change label
     def change_label(self, label_id, style, color):
         self.label_statusbar.config(fg=color, text=self.label_statebar[label_id])
+        self.label_statusbar.pack()
+        self.main.update_idletasks()
 
     def start_progressbar(self):
         self.progressbar.grid(row=0, column=0)
         self.progressbar.start(50)
+        self.main.update_idletasks()
 
     def stop_progressbar(self):
         self.progressbar.stop()
         self.progressbar.grid_remove()
+        self.main.update_idletasks()
 
     #close window
     def halt(self):
@@ -535,10 +575,10 @@ Adobe Air è indispensabile per eseguire il software Scratch 2.0
     #control connection
     def check_connection(self):
         self.check_root()
-        self.change_state_button('disabled')
-        self.change_label(1, 'normal', 'black')
         try:
                 urllib.request.urlopen(self.url_check)
+                self.change_state_button('disabled')
+                self.change_label(1, 'normal', 'black')
                 self.change_label(18, 'normal', 'black')
                 self.change_state_button('normal')
         except:
