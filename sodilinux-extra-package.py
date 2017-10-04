@@ -3,7 +3,7 @@
 '''
 @author    Antonio Faccioli <antonio.faccioli@soluzioniopen.com>
 @license   http://directory.fsf.org/wiki/License:MPLv2.0
-@version   1.0
+@version   1.1
 '''
 
 import tkinter as tk
@@ -359,7 +359,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         self.change_state_button('disabled')
         self.change_label(3, 'normal', 'black')
         link_get = {'teamviewer':'http://download.teamviewer.com/download/teamviewer_i386.deb',
-                    'skype64':'https://go.skype.com/skypeforlinux-64-alpha.deb',
+                    'skype64':'https://go.skype.com/skypeforlinux-64.deb',
                     'skype32':'http://www.skype.com/go/getskype-linux-deb'
                     }
         package_name = {'teamviewer':'teamviewer_i386.deb',
