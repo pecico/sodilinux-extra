@@ -19,7 +19,7 @@ class Main:
 
     def __init__ (self):
         self.main = tk.Tk()
-        self.main.title("Sodilinux Extra Package 1.0")
+        self.main.title("Sodilinux Extra Package 1.1")
         self.current_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
         self.header = tk.PhotoImage(file=self.current_dir + '/images/header.gif')
 
@@ -37,8 +37,6 @@ class Main:
         if os.path.exists(self.download_directory) == False:
             subprocess.getstatusoutput("mkdir " + self.download_directory)
 
-            
-        #self.package = ""
 
         self.intro = '''"So.Di.Linux Extra" è un tool che aiuta e semplifica l'installazione di alcuni software non presenti nell'installazione base.
 
@@ -49,7 +47,7 @@ I pulsanti si abilitano in base alla presenza o meno sul vostro PC del software 
         self.info = '''Sviluppato da Antonio Faccioli
 <antonio.faccioli@soluzioniopen.com>
 Licenza http://directory.fsf.org/wiki/License:MPLv2.0
-Versione 1.0
+Versione 1.1
 
 Il tool è stato finanziato da Italian Linux Society attraverso il crowdfunding.'''
 
@@ -86,6 +84,7 @@ Scratch è un linguaggio di programmazione che consente di elaborare storie inte
 L'idea di questo linguaggio è che anche i bambini o le persone inesperte di linguaggi di programmazione possono imparare importanti concetti di calcolo matematico, a ragionare in modo sistematico, a pensare in modo creativo e anche a lavorare partecipativamente.
 Scratch è caratterizzato da una programmazione con blocchi di costruzione (blocchi grafici) creati per adattarsi l'un l'altro, ma solo se inseriti in una corretta successione, in questo modo si evitano inesattezze nella sintassi.
 '''
+        self.vKaraoke = '''vanBasco's Karaoke Player 2.53 è un riproduttore MIDI Karaoke che mostra i testi a schermo intero. Supporta skin, cambiamenti e richiami di tempo, volume e chiave, disabilitare / assolo degli strumenti, e altro ancora.'''
 
         self.ubuntu = '''Nei sistemi Linux l’installazione di default consente di riprodurre un numero limitato di formati audio video: i formati “free”. Per riprodurre ad esempio i files mp3, wma o dvx è necessario installare i codec specifici. Per installare i codec principali in Ubuntu è possibile installare il pacchetto ubuntu-restricted-extras . (Fonte Web)'''
 
@@ -108,7 +107,8 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
                                "Pacchetto Adobe Air e Scratch",
                                "Pacchetto Ubuntu Extra",
                                "Informazioni",
-                               "Connessione presente"]
+                               "Connessione presente",
+                               "Pacchetto vanBasco Karaoke"]
 
         #header
         self.frame1 = tk.Frame(self.main, bd=1, relief="raised", bg="white")
@@ -116,7 +116,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         self.label1 = tk.Label(self.frame1, image=self.header, bd=0)
         self.label1.grid(row=0, column=0)
 
-        #button frame    
+        #button frame
         self.frame2 = tk.Frame(self.main, bd=1, relief="raised")
         self.frame2.grid(row=1, column=0, sticky="we")
 
@@ -133,6 +133,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         self.lb.insert("end", "Fonts Microsoft")
         self.lb.insert("end", "Adobe Air e Scratch")
         self.lb.insert("end", "Ubuntu Extra")
+        self.lb.insert("end", "vKaraoke")
         self.lb.insert("end", "Informazioni")
         self.lb.config(selectbackground="green")
         self.lb.config(height=22)
@@ -145,7 +146,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         self.text.config(state='disabled')
         self.text.config(height=23)
 
-        #button frame    
+        #button frame
         self.frame3 = tk.Frame(self.main, bd=1, relief="raised")
         self.frame3.grid(row=2, column=0, sticky="we")
         self.button_install = tk.Button(self.frame3, text=self.label_text1)
@@ -157,8 +158,8 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         self.progressFrame = ttk.Frame(self.frame3)
         self.progressFrame.grid(row=0, column=2)
         self.progressbar = ttk.Progressbar(self.progressFrame, orient='horizontal', mode='indeterminate', length=550)
-        
-        
+
+
         #state bar
         self.frame4 = tk.Frame(self.main, bd=1, relief="raised")
         self.frame4.grid(row=3, column=0, sticky="we")
@@ -186,10 +187,10 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
             if self.query_arch() == "x86_64":
                 version = "chrome64"
             else:
-                version = "chrome32" 
+                version = "chrome32"
             self.button_install.configure(state=self.query_package(package, "i", "dpkg"), command= lambda: self.install_google(package, version))
             self.button_uninstall.configure(state=self.query_package(package, "r", "dpkg"), command= lambda: self.uninstall_deb(package))
-            self.change_label(8, 'normal', 'black') 
+            self.change_label(8, 'normal', 'black')
             self.text.config(state='normal')
             self.text.delete(1.0, "end")
             self.text.insert("end", self.chrome)
@@ -231,7 +232,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
             self.text.insert("end", self.skype)
             self.text.config(state='disabled')
         elif value == "Pdf-xchange":
-            package = self.home[1]+"/.wine/drive_c/Program Files/Tracker Software/PDF Viewer/PDFXCview.exe"
+            package = self.home[1] + "/.wine/drive_c/Program\ Files/Tracker\ Software/PDF\ Viewer/PDFXCview.exe"
             self.button_install.configure(state=self.query_package(package, "i", "path"), command=self.install_pdfxchange)
             self.button_uninstall.configure(state=self.query_package(package, "r", "path"), command=self.uninstall_pdfxchange)
             self.change_label(12, 'normal', 'black')
@@ -283,6 +284,15 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
             self.text.delete(1.0, "end")
             self.text.insert("end", self.ubuntu)
             self.text.config(state='disabled')
+        elif value == "vKaraoke":
+            package = self.home[1]+"/.wine/drive_c/Program\ Files\ \(x86\)/vanBasco's\ Karaoke\ Player/vmidi.exe"
+            self.button_install.configure(state=self.query_package(package, "i", "path"), command=self.install_vkaraoke)
+            self.button_uninstall.configure(state=self.query_package(package, "r", "path"), command=self.uninstall_vkaraoke)
+            self.change_label(19, 'normal', 'black')
+            self.text.config(state='normal')
+            self.text.delete(1.0, "end")
+            self.text.insert("end", self.vKaraoke)
+            self.text.config(state='disabled')
 
     def query_package(self, package, action, type_query):
         if type_query == "dpkg":
@@ -296,7 +306,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
                 if action == "i":
                     state = 'normal'
                 elif action == "r":
-                    state = 'disabled'  
+                    state = 'disabled'
         elif type_query == "path":
             if os.path.exists(package):
                 if action == "i":
@@ -321,7 +331,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
                     "earth64":"sudo sh -c 'echo \"deb [arch=amd64] http://dl.google.com/linux/earth/deb/ stable main\" >> /etc/apt/sources.list.d/google.list'",
                     "earth32":"sudo sh -c 'echo \"deb http://dl.google.com/linux/earth/deb/ stable main\" >> /etc/apt/sources.list.d/google.list'"
                     }
-        
+
         proc = subprocess.Popen('wget -q -O - ' + link_key + ' | sudo apt-key add -', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         proc = subprocess.Popen(package_name[version], shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
@@ -332,7 +342,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         proc = subprocess.Popen('sudo apt-get --assume-yes install ' + package, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         self.change_label(5, 'normal', 'black')
-        
+
 
     def uninstall_deb(self, package):
         self.start_progressbar()
@@ -365,7 +375,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         proc.wait()
         self.change_label(5, 'normal', 'black')
         self.stop_progressbar()
-        
+
 
     def install_pdfxchange(self):
         self.check_connection()
@@ -377,7 +387,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         zip_ref = zipfile.ZipFile(self.download_directory + '/PDFXVwer.zip', 'r')
         zip_ref.extractall(self.download_directory)
         zip_ref.close()
-        self.change_label(1ì4, 'normal', 'black')
+        self.change_label(4, 'normal', 'black')
         proc = subprocess.Popen('wine ' + self.download_directory + '/PDFXVwer.exe /VERYSILENT /NORESTART', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         self.change_label(5, 'normal', 'black')
@@ -389,13 +399,32 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         proc.wait()
         self.change_label(5, 'normal', 'black')
 
+    def install_vkaraoke(self):
+        self.check_connection()
+        self.change_state_button('disabled')
+        self.change_label(3, 'normal', 'black')
+        link_get = {'vkaraoke':'http://www.vanbasco.com/downloads/vkaraoke.exe'}
+        proc = subprocess.Popen('wget ' + link_get['vkaraoke'] + ' -P ' + self.download_directory, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc.wait()
+        self.change_label(4, 'normal', 'black')
+        proc = subprocess.Popen('wine ' + self.download_directory + '/vkaraoke.exe /VERYSILENT /NORESTART', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc.wait()
+        self.change_label(5, 'normal', 'black')
+
+    def uninstall_vkaraoke(self):
+        self.change_label(6, 'normal', 'black')
+        vkaraoke = "~/.wine/drive_c/Program\ Files\ \(x86\)/vanBasco's\ Karaoke\ Player/uninst.exe"
+        proc = subprocess.Popen('wine ' + vkaraoke, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc.wait()
+        self.change_label(5, 'normal', 'black')
+
     def install_cmap(self, package):
         self.check_connection()
         self.change_label(3, 'normal', 'black')
         link_get = {'cmap32':'http://cmapdownload.ihmc.us/installs/CmapTools/Linux/Linux32CmapTools_v6.02_08-11-16.bin',
                     'cmap64':'http://cmapdownload.ihmc.us/installs/CmapTools/Linux/Linux64CmapTools_v6.02_08-11-16.bin'
                     }
-        
+
         confcmap = open(self.download_directory + "/installer.properties", "w")
 
         confcmap.write("INSTALLER_UI=SILENT\n")
@@ -412,7 +441,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         proc.wait()
         self.change_label(4, 'normal', 'black')
         proc = subprocess.Popen('sudo chmod +x ' + self.download_directory + '/Linux64CmapTools_v6.02_08-11-16.bin', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
-        proc.wait()         
+        proc.wait()
 
         proc = subprocess.Popen('sudo ' + self.download_directory + '/Linux64CmapTools_v6.02_08-11-16.bin -i silent -f ' + self.download_directory + '/installer.properties', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
@@ -437,7 +466,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
 
         iconFile.close()
         self.change_label(5, 'normal', 'black')
-        
+
 
     def uninstall_cmap(self):
         self.check_root()
@@ -456,7 +485,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         self.change_label(3, 'normal', 'black')
         self.change_state_button('disabled')
         proc = subprocess.Popen('apt install cabextract', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
-        proc.wait() 
+        proc.wait()
         link_get = {'fonts':'http://ftp.de.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb'}
         proc = subprocess.Popen('wget ' + link_get['fonts'] + ' -P ' + self.download_directory, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
@@ -587,6 +616,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
 
     def start(self):
         self.main.mainloop()
-	
+
 app = Main()
 app.start()
+
