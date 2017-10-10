@@ -197,7 +197,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
             self.text.insert("end", self.chrome)
             self.text.config(state='disabled')
         elif value == "Google Earth":
-            package = "google-earth-stable"
+            package = "google-earth-pro-stable"
             if self.query_arch() == "x86_64":
                 version = "earth64"
             else:
@@ -242,7 +242,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
             self.text.insert("end", self.pdf)
             self.text.config(state='disabled')
         elif value == "Cmaps":
-            package = "/opt/IHMC CmapTools/CmapTools"
+            package = "/opt/IHMC Cmapt-getools/Cmapt-getools"
             if self.query_arch() == "x86_64":
                 version = "cmap64"
             else:
@@ -331,32 +331,42 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         self.check_connection()
         self.change_state_button('disabled')
         self.change_label(3, 'normal', 'black')
-        link_key = "https://dl-ssl.google.com/linux/linux_signing_key.pub"
-        package_name = {"chrome64":"sh -c 'echo \"deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main\" >> /etc/apt/sources.list.d/google.list'",
-                    "chrome32":"sh -c 'echo \"deb http://dl.google.com/linux/chrome/deb/ stable main\" >> /etc/apt/sources.list.d/google.list'",
-                    "earth64":"sh -c 'echo \"deb [arch=amd64] http://dl.google.com/linux/earth/deb/ stable main\" >> /etc/apt/sources.list.d/google.list'",
-                    "earth32":"sh -c 'echo \"deb http://dl.google.com/linux/earth/deb/ stable main\" >> /etc/apt/sources.list.d/google.list'"
+        link_key = "https://dl.google.com/linux/linux_signing_key.pub"
+        package_name = {"chrome64":" sh -c 'echo \"deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main\" >> /etc/apt/sources.list.d/google-chrome.list'",
+                    "chrome32":" sh -c 'echo \"deb http://dl.google.com/linux/chrome/deb/ stable main\" >> /etc/apt/sources.list.d/google-chrome.list'",
+                    "earth64":" sh -c 'echo \"deb [arch=amd64] http://dl.google.com/linux/earth/deb/ stable main\" >> /etc/apt/sources.list.d/google-earth.list'",
+                    "earth32":" sh -c 'echo \"deb http://dl.google.com/linux/earth/deb/ stable main\" >> /etc/apt/sources.list.d/google-earth.list'"
                     }
 
-        proc = subprocess.Popen('wget -q -O - ' + link_key + ' | sudo apt-key add -', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        pathList = {"chrome64":"/etc/apt/sources.list.d/google-chrome.list",
+                    "chrome32":"/etc/apt/sources.list.d/google-chrome.list",
+                    "earth64":"/etc/apt/sources.list.d/google-earth.list",
+                    "earth32":"/etc/apt/sources.list.d/google-earth.list"
+                    }
+
+        proc = subprocess.Popen('wget ' + link_key + ' -P ' + self.download_directory, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-        proc = subprocess.Popen('echo '+ self.psw + ' |sudo -S '+package_name[version], shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo ' + self.psw + ' | sudo -S apt-key add ' + self.download_directory + '/linux_signing_key.pub', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
+        if os.path.exists(pathList[version]) == False:
+            proc = subprocess.Popen('echo ' + self.psw + ' | sudo -S '+ package_name[version], shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+            proc.wait()
         self.change_label(4, 'normal', 'black')
-        proc = subprocess.Popen('echo '+ self.psw +' |sudo -S apt-get --assume-yes update', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo ' + self.psw + ' | sudo -S apt-get --assume-yes update', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-        proc = subprocess.Popen('echo '+ self.psw +' |sudo -S apt-get --assume-yes install ' + package, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo ' + self.psw + ' | sudo -S apt-get --assume-yes install ' + package, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-        proc = subprocess.Popen('echo '+ self.psw +' |sudo -S apt install -f', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo ' + self.psw + ' | sudo -S apt-get --assume-yes install -f', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         self.change_label(5, 'normal', 'black')
+        self.main.update()
 
 
     def uninstall_deb(self, package):
         self.psw = self.getPsw("Inserisci la password per l'installazione")
         self.start_progressbar()
         self.change_label(6, 'normal', 'black')
-        proc = subprocess.Popen('echo '+ self.psw +' |sudo -S sudo apt-get --assume-yes remove ' + package, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw + ' | sudo -S sudo apt-get --assume-yes remove ' + package, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         self.stop_progressbar()
         self.change_label(5, 'normal', 'black')
@@ -379,9 +389,9 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         proc = subprocess.Popen('wget ' + link_get[package] + ' -P ' + self.download_directory, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         self.change_label(4, 'normal', 'black')
-        proc = subprocess.Popen('echo '+ self.psw +' |sudo -S dpkg -i ' + self.download_directory + '/' + package_name[package], shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw + ' | sudo -S dpkg -i ' + self.download_directory + '/' + package_name[package], shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-        proc = subprocess.Popen('echo '+ self.psw +' |sudo -S apt -f install', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw + ' | sudo -S apt-get -f install', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         self.change_label(5, 'normal', 'black')
         self.stop_progressbar()
@@ -432,43 +442,46 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         self.psw = self.getPsw("Inserisci la password per l'installazione")
         self.check_connection()
         self.change_label(3, 'normal', 'black')
-        link_get = {'cmap32':'http://cmapdownload.ihmc.us/installs/CmapTools/Linux/Linux32CmapTools_v6.02_08-11-16.bin',
-                    'cmap64':'http://cmapdownload.ihmc.us/installs/CmapTools/Linux/Linux64CmapTools_v6.02_08-11-16.bin'
+        link_get = {'cmap32':'http://cmapdownload.ihmc.us/installs/Cmapt-getools/Linux/Linux32Cmapt-getools_v6.02_08-11-16.bin',
+                    'cmap64':'http://cmapdownload.ihmc.us/installs/Cmapt-getools/Linux/Linux64Cmapt-getools_v6.02_08-11-16.bin'
                     }
 
         confcmap = open(self.download_directory + "/installer.properties", "w")
 
         confcmap.write("INSTALLER_UI=SILENT\n")
         confcmap.write("CONFIGURATION=Advanced\n")
-        confcmap.write("USER_INSTALL_DIR=/opt/IHMC CmapTools\n")
+        confcmap.write("USER_INSTALL_DIR=/opt/IHMC Cmapt-getools\n")
         confcmap.write("USER_SHORTCUTS=" + self.home[1] + "/Scrivania\n")
-        confcmap.write("USER_PROFILE=" + self.home[1] + "/CmapTools/profile\n")
+        confcmap.write("USER_PROFILE=" + self.home[1] + "/Cmapt-getools/profile\n")
         confcmap.write("LOGS=1\n")
-        confcmap.write("LOGS_PATH=" + self.home[1] + "/CmapTools/profile/CmapToolsLogs\n")
+        confcmap.write("LOGS_PATH=" + self.home[1] + "/Cmapt-getools/profile/Cmapt-getoolsLogs\n")
 
         confcmap.close()
 
         proc = subprocess.Popen('wget ' + link_get[package] + ' -P ' + self.download_directory, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         self.change_label(4, 'normal', 'black')
-        proc = subprocess.Popen('echo '+ self.psw +' |sudo -S chmod +x ' + self.download_directory + '/Linux64CmapTools_v6.02_08-11-16.bin', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S chmod +x ' + self.download_directory + '/Linux64Cmapt-getools_v6.02_08-11-16.bin', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
 
-        proc = subprocess.Popen('echo '+ self.psw +' |sudo -S  ' + self.download_directory + '/Linux64CmapTools_v6.02_08-11-16.bin -i silent -f ' + self.download_directory + '/installer.properties', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S  ' + self.download_directory + '/Linux64Cmapt-getools_v6.02_08-11-16.bin -i silent -f ' + self.download_directory + '/installer.properties', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
 
-        proc = subprocess.Popen('echo '+ self.psw +' |sudo -S  wget http://cmap.ihmc.us/wp-content/themes/cmap/img/cmap-logo.png -P /opt/\'IHMC CmapTools\'/', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S wget http://cmap.ihmc.us/wp-content/themes/cmap/img/cmap-logo.png -P /opt/\'IHMC Cmapt-getools\'/', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
 
-        iconFile = open('/usr/share/applications/cmaptools.desktop','w')
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S ', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc.wait()
+
+        iconFile = open(self.download_directory + '/cmapt-getools.desktop','w')
 
         iconFile.write('[Desktop Entry]\n')
         iconFile.write('Type=Application\n')
-        iconFile.write('Icon=/opt/IHMC CmapTools/cmap-logo.png\n')
-        iconFile.write('Name=CmapTools\n')
-        iconFile.write('Name[it]=CmapTools\n')
+        iconFile.write('Icon=/opt/IHMC Cmapt-getools/cmap-logo.png\n')
+        iconFile.write('Name=Cmapt-getools\n')
+        iconFile.write('Name[it]=Cmapt-getools\n')
         iconFile.write('Categories=Graphics;\n')
-        iconFile.write('Exec=/opt/\'IHMC CmapTools\'/CmapTools\n')
+        iconFile.write('Exec=/opt/\'IHMC Cmapt-getools\'/Cmapt-getools\n')
         iconFile.write('StartupNotify=true\n')
         iconFile.write('Terminal=false\n')
         iconFile.write('MimeType=x-directory/normal;inode/directory;\n')
@@ -476,17 +489,21 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         iconFile.write('X-Desktop-File-Install-Version=0.11\n')
 
         iconFile.close()
+
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S cp ' + self.download_directory + '/cmapt-getools.desktop /usr/share/applications/cmapt-getools.desktop', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc.wait()
+        
         self.change_label(5, 'normal', 'black')
 
 
     def uninstall_cmap(self):
         self.psw = self.getPsw("Inserisci la password per l'installazione")
         self.change_label(6, 'normal', 'black')
-        proc = subprocess.Popen('echo '+ self.psw +' |sudo -S rm /opt/\'IHMC CmapTools\'/cmap-logo.png', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S rm /opt/\'IHMC Cmapt-getools\'/cmap-logo.png', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-        proc = subprocess.Popen('echo '+ self.psw +' |sudo -S rm /usr/share/applications/cmaptools.desktop', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S rm /usr/share/applications/cmapt-getools.desktop', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-        proc = subprocess.Popen('echo '+ self.psw +' |sudo -S /opt/\'IHMC CmapTools\'/\'Uninstall CmapTools\'', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S /opt/\'IHMC Cmapt-getools\'/\'Uninstall Cmapt-getools\'', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         self.change_label(5, 'normal', 'black')
 
@@ -496,21 +513,21 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         self.start_progressbar()
         self.change_label(3, 'normal', 'black')
         self.change_state_button('disabled')
-        proc = subprocess.Popen('apt install cabextract', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('apt-get install cabextract', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         link_get = {'fonts':'http://ftp.de.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb'}
         proc = subprocess.Popen('wget ' + link_get['fonts'] + ' -P ' + self.download_directory, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         self.change_label(4, 'normal', 'black')
-        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt --assume-yes install cabextract', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt-get --assume-yes install cabextract', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         proc = subprocess.Popen('echo '+ self.psw +' | sudo -S dpkg -i ' + self.download_directory + '/ttf-mscorefonts-installer_3.6_all.deb', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt --assume-yes install fonts-crosextra-caladea', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt-get --assume-yes install fonts-crosextra-caladea', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt --assume-yes install fonts-crosextra-carlito', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt-get --assume-yes install fonts-crosextra-carlito', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt --assume-yes -f install', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt-get --assume-yes install -f', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         self.stop_progressbar()
         self.change_label(5, 'normal', 'black')
@@ -519,11 +536,11 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         self.psw = self.getPsw("Inserisci la password per l'installazione")
         self.start_progressbar()
         self.change_label(6, 'normal', 'black')
-        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt --assume-yes remove ttf-mscorefonts-installer', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt-get --assume-yes remove ttf-mscorefonts-installer', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt --assume-yes remove fonts-crosextra-caladea', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt-get --assume-yes remove fonts-crosextra-caladea', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt --assume-yes remove fonts-crosextra-carlito', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt-get --assume-yes remove fonts-crosextra-carlito', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         self.stop_progressbar()
         self.change_label(5, 'normal', 'black')
@@ -541,42 +558,40 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         self.change_label(4, 'normal', 'black')
         proc = subprocess.Popen('echo '+ self.psw +' | sudo -S dpkg -i ' + self.download_directory + '/' + link_get[version], shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt-get install -f', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt-get --assume-yes install -f', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         proc = subprocess.Popen('wget https://scratch.mit.edu/scratchr2/static/sa/Scratch-456.0.1.air -P ' + self.download_directory, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-        proc = subprocess.Popen('/opt/Adobe AIR/Versions/1.0/Adobe AIR Application Installer -silent -location /opt ' + self.download_directory + '/' + 'Scratch-456.0.1.air', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('/opt/Adobe\ AIR/Versions/1.0/Adobe\ AIR\ Application\ Installer -silent -location /opt ' + self.download_directory + '/' + 'Scratch-456.0.1.air', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         self.change_label(5, 'normal', 'black')
 
-    def uninstall_air():
+    def uninstall_air(self):
         self.psw = self.getPsw("Inserisci la password per l'installazione")
         self.change_label(6, 'normal', 'black')
-        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt autoremove adobeair', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt-get --assume-yes autoremove adobeair', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         self.change_label(5, 'normal', 'black')
 
     def install_extra(self):
         self.psw = self.getPsw("Inserisci la password per l'installazione")
         self.change_label(4, 'normal', 'black')
-        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt --assume-yes install ubuntu-restricted-extras', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt-get --assume-yes install ubuntu-restricted-extras', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt --assume-yes install libdvdnav4 libdvdread4 gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly libdvd-pkg', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt-get --assume-yes install libdvdnav4 libdvdread4 gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly libdvd-pkg', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         proc = subprocess.Popen('echo '+ self.psw +' | sudo -S dpkg-reconfigure libdvd-pkg', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt --assume-yes -f install', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
-        proc.wait()
-        proc = subprocess.Popen('echo '+self.psw+' |sudo -S apt install -f', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt-get --assume-yes install -f', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         self.change_label(5, 'normal', 'black')
 
     def uninstall_extra(self):
         self.psw = self.getPsw("Inserisci la password per l'installazione")
         self.change_label(6, 'normal', 'black')
-        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt --assume-yes remove ubuntu-restricted-extras', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt-get --assume-yes remove ubuntu-restricted-extras', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt --assume-yes remove libdvdnav4 libdvdread4 gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly libdvd-pkg', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt-get --assume-yes remove libdvdnav4 libdvdread4 gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly libdvd-pkg', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         self.change_label(5, 'normal', 'black')
 
@@ -633,4 +648,3 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
 
 app = Main()
 app.start()
-
