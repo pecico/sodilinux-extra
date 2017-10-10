@@ -457,7 +457,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         proc = subprocess.Popen('echo '+ self.psw +' |sudo -S  ' + self.download_directory + '/Linux64CmapTools_v6.02_08-11-16.bin -i silent -f ' + self.download_directory + '/installer.properties', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
 
-        proc = subprocess.Popen('wget http://cmap.ihmc.us/wp-content/themes/cmap/img/cmap-logo.png -P /opt/\'IHMC CmapTools\'/', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' |sudo -S  wget http://cmap.ihmc.us/wp-content/themes/cmap/img/cmap-logo.png -P /opt/\'IHMC CmapTools\'/', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
 
         iconFile = open('/usr/share/applications/cmaptools.desktop','w')
