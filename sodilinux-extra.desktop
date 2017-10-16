@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=SoDiLinux Extra
+Comment=Software per semplificare l'installazione di software di terze parti
+Exec=gksu python3 /usr/share/sodilinux/sodilinux-extra/sodilinux-extra-package.py
+Icon=sodilinux
+Terminal=false
+Type=Application
+StartupNotify=true
+Categories=System;
