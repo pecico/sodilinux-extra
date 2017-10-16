@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=CMAP Tools 
+Type=Application
+Exec=/usr/local/IHMC_CmapTools/bin/CmapTools
+Icon=sodilinux
+Terminal=false
+Categories=Education;SDL-MAP;
+GenericName=Editor di Mappe
+Comment=Editor di mappe mentali 
+MimeType=application/cmaptools
