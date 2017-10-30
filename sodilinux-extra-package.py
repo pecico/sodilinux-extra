@@ -378,7 +378,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
                     'skype32':'http://www.skype.com/go/getskype-linux-deb'
                     }
         package_name = {'teamviewer':'teamviewer_i386.deb',
-                    'skype64':'skypeforlinux-64-alpha.deb',
+                    'skype64':'skypeforlinux.deb',
                     'skype32':'skype-debian_4.3.0.37-1_i386.deb'
                     }
         proc = subprocess.Popen('wget ' + link_get[package] + ' -P ' + self.download_directory, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
@@ -386,7 +386,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         self.change_label(4, 'normal', 'black')
         proc = subprocess.Popen('echo '+ self.psw + ' | sudo -S dpkg -i ' + self.download_directory + '/' + package_name[package], shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-        proc = subprocess.Popen('echo '+ self.psw + ' | sudo -S apt-get -f install', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw + ' | sudo -S apt-get --assume-yes -f install', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         self.change_label(5, 'normal', 'black')
 
@@ -436,8 +436,8 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         self.psw = self.getPsw("Inserisci la password per l'installazione")
         self.check_connection()
         self.change_label(3, 'normal', 'black')
-        link_get = {'cmap32':'http://cmapdownload.ihmc.us/installs/Cmapt-getools/Linux/Linux32Cmapt-getools_v6.02_08-11-16.bin',
-                    'cmap64':'http://cmapdownload.ihmc.us/installs/Cmapt-getools/Linux/Linux64Cmapt-getools_v6.02_08-11-16.bin'
+        link_get = {'cmap32':'http://cmapdownload.ihmc.us/installs/Cmapt-getools/Linux/Linux32Cmapt-getools_v6.03_10-04-17.bin',
+                    'cmap64':'http://cmapdownload.ihmc.us/installs/Cmapt-getools/Linux/Linux64Cmapt-getools_v6.03_10-04-17.bin'
                     }
 
         confcmap = open(self.download_directory + "/installer.properties", "w")
@@ -547,11 +547,11 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         self.check_connection()
         self.change_state_button('disabled')
         self.change_label(3, 'normal', 'black')
-        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt-get install libgtk2.0-0:i386 libstdc++6:i386 libxml2:i386 libxslt1.1:i386 libcanberra-gtk-module:i386 gtk2-engines-murrine:i386 libqt4-qt3support:i386 libgnome-keyring0:i386 libnss-mdns:i386 libnss3:i386', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt-get --assume-yes install libgtk2.0-0:i386 libstdc++6:i386 libxml2:i386 libxslt1.1:i386 libcanberra-gtk-module:i386 gtk2-engines-murrine:i386 libqt4-qt3support:i386 libgnome-keyring0:i386 libnss-mdns:i386 libnss3:i386', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt-get install ln -s /usr/lib/i386-linux-gnu/libgnome-keyring.so.0 /usr/lib/libgnome-keyring.so.0', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S ln -s /usr/lib/i386-linux-gnu/libgnome-keyring.so.0 /usr/lib/libgnome-keyring.so.0', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
-        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S apt-get install ln -s /usr/lib/i386-linux-gnu/libgnome-keyring.so.0.2.0 /usr/lib/libgnome-keyring.so.0.2.0', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S ln -s /usr/lib/i386-linux-gnu/libgnome-keyring.so.0.2.0 /usr/lib/libgnome-keyring.so.0.2.0', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         proc = subprocess.Popen('wget http://airdownload.adobe.com/air/lin/download/2.6/AdobeAIRSDK.tbz2 -P ' + self.download_directory, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
