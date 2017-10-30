@@ -3,7 +3,7 @@
 '''
 @author    Antonio Faccioli <antonio.faccioli@soluzioniopen.com>
 @license   http://directory.fsf.org/wiki/License:MPLv2.0
-@version   1.1
+@version   1.2
 '''
 
 import tkinter as tk
@@ -378,7 +378,7 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
                     'skype32':'http://www.skype.com/go/getskype-linux-deb'
                     }
         package_name = {'teamviewer':'teamviewer_i386.deb',
-                    'skype64':'skypeforlinux.deb',
+                    'skype64':'skypeforlinux-64.deb',
                     'skype32':'skype-debian_4.3.0.37-1_i386.deb'
                     }
         proc = subprocess.Popen('wget ' + link_get[package] + ' -P ' + self.download_directory, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
@@ -439,6 +439,10 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         link_get = {'cmap32':'http://cmapdownload.ihmc.us/installs/Cmapt-getools/Linux/Linux32Cmapt-getools_v6.03_10-04-17.bin',
                     'cmap64':'http://cmapdownload.ihmc.us/installs/Cmapt-getools/Linux/Linux64Cmapt-getools_v6.03_10-04-17.bin'
                     }
+        
+        link_inst = {'cmap32':'Linux32Cmapt-getools_v6.03_10-04-17.bin',
+                    'cmap64':'Linux64Cmapt-getools_v6.03_10-04-17.bin'
+                    }
 
         confcmap = open(self.download_directory + "/installer.properties", "w")
 
@@ -455,10 +459,10 @@ Scratch è caratterizzato da una programmazione con blocchi di costruzione (bloc
         proc = subprocess.Popen('wget ' + link_get[package] + ' -P ' + self.download_directory, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
         self.change_label(4, 'normal', 'black')
-        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S chmod +x ' + self.download_directory + '/Linux64Cmapt-getools_v6.02_08-11-16.bin', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S chmod +x ' + self.download_directory + '/' + link_get[package], shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
 
-        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S  ' + self.download_directory + '/Linux64Cmapt-getools_v6.02_08-11-16.bin -i silent -f ' + self.download_directory + '/installer.properties', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
+        proc = subprocess.Popen('echo '+ self.psw +' | sudo -S  ' + self.download_directory + '/' + link_get[package] + '-i silent -f ' + self.download_directory + '/installer.properties', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
         proc.wait()
 
         proc = subprocess.Popen('echo '+ self.psw +' | sudo -S wget http://cmap.ihmc.us/wp-content/themes/cmap/img/cmap-logo.png -P /opt/\'IHMC Cmapt-getools\'/', shell=True, stdin=None, stdout=subprocess.PIPE, stderr=None, executable="/bin/bash")
